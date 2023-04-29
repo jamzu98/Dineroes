@@ -1,7 +1,7 @@
 import React, { createContext, useState, ReactNode, useEffect } from 'react';
 import { Transaction } from '../types';
 import { auth, firestore } from '../firebase';
-import { onAuthStateChanged } from 'firebase/auth';
+import { User, onAuthStateChanged } from 'firebase/auth';
 import {
   collection,
   where,
