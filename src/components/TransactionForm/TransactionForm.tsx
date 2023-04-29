@@ -15,7 +15,7 @@ const TransactionForm: React.FC = () => {
     event.preventDefault();
 
     const transaction: Transaction = {
-      id: Date.now(),
+      id: Date.now().toString(),
       description,
       amount: parseFloat(amount),
       date: new Date().toISOString(),
