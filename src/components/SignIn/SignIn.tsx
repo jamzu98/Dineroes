@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
-import supabase from '../../supabaseClient';
+import { auth } from '../../firebase';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
 
 const SignIn: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -20,17 +24,14 @@ const SignIn: React.FC = () => {
     setLoading(true);
     setError('');
 
-    const { error } = await supabase.auth.signUp({
-      email: signUpEmail,
-      password: signUpPassword,
-    });
-
-    if (error) {
-      setError(error.message);
-    } else {
+    try {
+      await createUserWithEmailAndPassword(auth, signUpEmail, signUpPassword);
       setShowConfirmationMessage(true);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleSignIn = async (e: React.FormEvent) => {
@@ -38,15 +39,13 @@ const SignIn: React.FC = () => {
     setLoading(true);
     setError('');
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
       setError(error.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
