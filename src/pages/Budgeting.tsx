@@ -34,6 +34,11 @@ const Budgeting: React.FC = () => {
   const handleAddCategory = () => {
     addCategory(newCategory);
     setNewCategory({ name: '', amount: 0 });
+    (
+      document.querySelector<HTMLInputElement>(
+        '#categoryName'
+      ) as HTMLInputElement
+    )?.focus();
   };
 
   const calculateRemainingBudget = () => {
@@ -85,10 +90,16 @@ const Budgeting: React.FC = () => {
         <div className="flex mb-4">
           <input
             type="text"
+            id="categoryName"
             className="border border-gray-300 px-2 py-1 mr-2 flex-1"
             placeholder="Category name"
             value={newCategory.name}
             onChange={(e) => handleCategoryChange(e, 'name')}
+            onKeyUp={(e) => {
+              if (e.key === 'Enter') {
+                handleAddCategory();
+              }
+            }}
           />
           <input
             type="number"
@@ -96,6 +107,11 @@ const Budgeting: React.FC = () => {
             placeholder="Amount"
             value={newCategory.amount}
             onChange={(e) => handleCategoryChange(e, 'amount')}
+            onKeyUp={(e) => {
+              if (e.key === 'Enter') {
+                handleAddCategory();
+              }
+            }}
           />
           <button
             className="bg-green-500 text-white px-2 py-1"
