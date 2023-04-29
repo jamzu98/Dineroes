@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
+import Budgeting from './pages/Budgeting';
 import { TransactionsProvider } from './contexts/TransactionsContext';
 import SignIn from './components/SignIn/SignIn';
 import { auth } from './firebase';
+import { BudgetProvider } from './contexts/BudgetContext';
+import Navbar from './components/Navbar/Navbar';
 
 const App: React.FC = () => {
   const [signedIn, setSignedIn] = useState(false);
@@ -27,7 +31,15 @@ const App: React.FC = () => {
         <SignIn />
       ) : (
         <TransactionsProvider>
-          <Dashboard />
+          <BudgetProvider>
+            <Router>
+              <Navbar />
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/budgeting" element={<Budgeting />} />
+              </Routes>
+            </Router>
+          </BudgetProvider>
         </TransactionsProvider>
       )}
     </div>

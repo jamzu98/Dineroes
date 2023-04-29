@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 import TransactionsContext from '../../contexts/TransactionsContext';
-// import { Transaction } from '../../types';
 
 const Summary: React.FC = () => {
   const { transactions } = useContext(TransactionsContext);
