@@ -1,7 +1,7 @@
 import React, { createContext, useState, ReactNode, useEffect } from 'react';
 import { auth, firestore } from '../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { collection, doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 
 interface Category {
   name: string;
@@ -53,7 +53,7 @@ export const BudgetProvider: React.FC<BudgetProviderProps> = ({ children }) => {
           const budgetData = budgetSnap.data() as Budget;
           budgetData.categories = budgetData.categories.map((category) => ({
             ...category,
-            amount: parseFloat(category.amount),
+            amount: category.amount,
           }));
           setBudget(budgetData);
         } else {
