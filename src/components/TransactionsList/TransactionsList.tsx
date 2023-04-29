@@ -66,7 +66,9 @@ const TransactionsList: React.FC = () => {
           id="sort"
           options={sortOptions}
           value={selectedSort}
-          onChange={(selectedOption) => setSelectedSort(selectedOption)}
+          onChange={(selectedOption) =>
+            selectedOption && setSelectedSort(selectedOption)
+          }
           className="mt-1"
         />
       </div>
