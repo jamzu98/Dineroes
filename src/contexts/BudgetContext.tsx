@@ -2,6 +2,7 @@ import React, { createContext, useState, ReactNode, useEffect } from 'react';
 import { auth, firestore } from '../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
+import Message from '../components/Message/Message';
 
 interface Category {
   name: string;
@@ -42,6 +43,8 @@ export const BudgetProvider: React.FC<BudgetProviderProps> = ({ children }) => {
     monthlyBudget: 0,
     categories: [],
   });
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showMessage, setShowMessage] = useState<boolean>(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -88,22 +91,39 @@ export const BudgetProvider: React.FC<BudgetProviderProps> = ({ children }) => {
     }
   };
 
+  const handleMessageVisibilityChange = (isVisible: boolean) => {
+    setShowMessage(isVisible);
+  };
+
   const addCategory = async (category: Category) => {
     if (!auth.currentUser) return;
 
     const budgetRef = doc(firestore, 'budgets', auth.currentUser.uid);
 
     try {
-      await updateDoc(budgetRef, {
-        categories: [...(budget?.categories || []), category],
-      });
-      setBudget((prevBudget) => {
-        if (!prevBudget) return null;
-        return {
-          ...prevBudget,
-          categories: [...prevBudget.categories, category],
-        };
-      });
+      const currentCategories = budget?.categories || [];
+      if (
+        !currentCategories.some(
+          (existingCategory) => existingCategory.name === category.name
+        )
+      ) {
+        await updateDoc(budgetRef, {
+          categories: [...currentCategories, category],
+        });
+        setBudget((prevBudget) => {
+          if (!prevBudget) return null;
+          return {
+            ...prevBudget,
+            categories: [...prevBudget.categories, category],
+          };
+        });
+      } else {
+        console.warn(`CATEGORY ALREADY EXISTS: ${category.name}`);
+        setErrorMessage(
+          'Category already exists. Check the naming and try again.'
+        );
+        setShowMessage(true);
+      }
     } catch (error) {
       console.error('Error adding category: ', error);
     }
@@ -138,6 +158,14 @@ export const BudgetProvider: React.FC<BudgetProviderProps> = ({ children }) => {
     <BudgetContext.Provider
       value={{ budget, setMonthlyBudget, addCategory, deleteCategory }}
     >
+      {errorMessage && (
+        <Message
+          message={errorMessage}
+          color="red"
+          visible={showMessage}
+          onVisibilityChange={handleMessageVisibilityChange}
+        />
+      )}
       {children}
     </BudgetContext.Provider>
   );
