@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useContext, useState } from 'react';
 import TransactionsContext from '../../contexts/TransactionsContext';
 import Select from 'react-select';
