@@ -15,7 +15,7 @@ const Summary: React.FC = () => {
   const balance = income + expenses;
 
   return (
-    <div className="bg-white shadow-md rounded p-6 mx-auto my-8 max-w-4xl">
+    <div className="bg-white shadow-md rounded p-6 mx-auto mb-8 max-w-4xl">
       <div className="grid grid-cols-3 gap-4">
         <div className="text-center">
           <h3 className="text-xl font-bold">Income</h3>
