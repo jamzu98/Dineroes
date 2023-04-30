@@ -5,6 +5,7 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
 } from 'firebase/auth';
+import logo from '../../assets/Dineroes_logo256.png';
 
 const SignIn: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -76,6 +77,7 @@ const SignIn: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+      <img src={logo} alt="logo" className="w-32 mb-4" />
       <h1 className="text-3xl font-bold mb-4">
         {!showSignUp ? `Sign In` : `Sign Up`}
       </h1>
