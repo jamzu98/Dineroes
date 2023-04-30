@@ -1,4 +1,4 @@
-# Budget Tracker
+# DINEROES | Budget Tracker
 
 ![Dineroes Logo](./src/assets/Dineroes_logo256.png)
 
