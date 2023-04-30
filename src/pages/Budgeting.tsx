@@ -157,7 +157,7 @@ const Budgeting: React.FC = () => {
           </div>
           <div className="ml-12 flex-1">
             <h2 className="text-xl font-bold mb-2">Category Details</h2>
-            <table className="table-auto border-collapse border border-gray-300 w-full">
+            <table className="table-auto border-collapse border border-gray-300 w-full bg-white">
               <thead>
                 <tr>
                   <th className="border border-gray-300 px-4 py-2">Category</th>
@@ -177,14 +177,16 @@ const Budgeting: React.FC = () => {
                 ))}
               </tbody>
             </table>
-            <h3 className="text-lg font-bold mt-4">Unallocated Budget</h3>
-            <p
-              className={
-                calculateRemainingBudget() < 0
-                  ? 'text-red-600'
-                  : 'text-green-600'
-              }
-            >{`${calculateRemainingBudget()}`}</p>
+            <div className="bg-white p-4 border-2">
+              <h3 className="text-lg font-bold mt-4">Unallocated Budget</h3>
+              <p
+                className={
+                  calculateRemainingBudget() < 0
+                    ? 'text-red-600'
+                    : 'text-green-600'
+                }
+              >{`${calculateRemainingBudget()}`}</p>
+            </div>
           </div>
         </div>
       )}
