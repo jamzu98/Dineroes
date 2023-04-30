@@ -7,6 +7,7 @@ import SignIn from './components/SignIn/SignIn';
 import { auth } from './firebase';
 import { BudgetProvider } from './contexts/BudgetContext';
 import Navbar from './components/Navbar/Navbar';
+import Profile from './pages/Profile';
 
 const App: React.FC = () => {
   const [signedIn, setSignedIn] = useState(false);
@@ -37,6 +38,7 @@ const App: React.FC = () => {
               <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/budgeting" element={<Budgeting />} />
+                <Route path="/profile" element={<Profile />} />
               </Routes>
             </Router>
           </BudgetProvider>

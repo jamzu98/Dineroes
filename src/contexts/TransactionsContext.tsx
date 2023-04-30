@@ -10,12 +10,14 @@ import {
   setDoc,
   deleteDoc,
   query,
+  writeBatch,
 } from 'firebase/firestore';
 
 interface TransactionsContextState {
   transactions: Transaction[];
   addTransaction: (transaction: Omit<Transaction, 'id'>) => void;
   deleteTransaction: (id: string) => void;
+  clearTransactionsData: () => void;
 }
 
 interface TransactionsProviderProps {
@@ -29,6 +31,9 @@ const TransactionsContext = createContext<TransactionsContextState>({
   },
   deleteTransaction: () => {
     console.warn('Delete transaction not implemented');
+  },
+  clearTransactionsData: () => {
+    console.warn('Clear transactions data not implemented');
   },
 });
 
@@ -96,9 +101,31 @@ export const TransactionsProvider: React.FC<TransactionsProviderProps> = ({
     }
   };
 
+  const clearTransactionsData = async () => {
+    if (!user) return;
+
+    const batch = writeBatch(firestore);
+    transactions.forEach((transaction) => {
+      const transactionRef = doc(firestore, 'transactions', transaction.id);
+      batch.delete(transactionRef);
+    });
+
+    try {
+      await batch.commit();
+      setTransactions([]);
+    } catch (error) {
+      console.error('Error clearing transactions data: ', error);
+    }
+  };
+
   return (
     <TransactionsContext.Provider
-      value={{ transactions, addTransaction, deleteTransaction }}
+      value={{
+        transactions,
+        addTransaction,
+        deleteTransaction,
+        clearTransactionsData,
+      }}
     >
       {children}
     </TransactionsContext.Provider>

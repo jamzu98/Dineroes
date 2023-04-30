@@ -19,6 +19,7 @@ interface BudgetContextState {
   setMonthlyBudget: (budget: number) => void;
   addCategory: (category: Category) => void;
   deleteCategory: (categoryName: string) => void;
+  clearBudgetData: () => void;
 }
 
 interface BudgetProviderProps {
@@ -35,6 +36,9 @@ const BudgetContext = createContext<BudgetContextState>({
   },
   deleteCategory: () => {
     console.warn('Delete category not implemented');
+  },
+  clearBudgetData: () => {
+    console.warn('Clear budget data not implemented');
   },
 });
 
@@ -168,9 +172,32 @@ export const BudgetProvider: React.FC<BudgetProviderProps> = ({ children }) => {
     }
   };
 
+  const clearBudgetData = async () => {
+    if (!auth.currentUser) return;
+
+    const budgetRef = doc(firestore, 'budgets', auth.currentUser.uid);
+    const initialBudget: Budget = {
+      monthlyBudget: 0,
+      categories: [],
+    };
+
+    try {
+      await setDoc(budgetRef, initialBudget);
+      setBudget(initialBudget);
+    } catch (error) {
+      console.error('Error clearing budget data: ', error);
+    }
+  };
+
   return (
     <BudgetContext.Provider
-      value={{ budget, setMonthlyBudget, addCategory, deleteCategory }}
+      value={{
+        budget,
+        setMonthlyBudget,
+        addCategory,
+        deleteCategory,
+        clearBudgetData,
+      }}
     >
       {errorMessage && (
         <Message

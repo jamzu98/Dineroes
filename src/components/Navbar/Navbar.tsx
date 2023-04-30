@@ -32,10 +32,16 @@ const Navbar: React.FC = () => {
               className="text-white focus:outline-none hover:text-gray-100 font-bold"
               onClick={() => setDropdownVisible(!dropdownVisible)}
             >
-              {user.email}
+              {user.displayName ? user.displayName : user.email}
             </button>
             {dropdownVisible && (
               <div className="absolute right-0 mt-2 bg-white text-black shadow-md rounded py-2">
+                <Link
+                  to="/profile"
+                  className="w-full px-4 py-2 hover:bg-gray-200 focus:outline-none"
+                >
+                  Profile
+                </Link>
                 <button
                   className="w-full text-left px-4 py-2 hover:bg-gray-200 focus:outline-none"
                   onClick={handleSignOut}
