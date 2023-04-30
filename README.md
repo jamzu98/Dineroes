@@ -1,6 +1,6 @@
 # Budget Tracker
 
-![Dineroes Logo](./assets/Dineroes.logo256.png)
+![Dineroes Logo](./assets/Dineroes_logo256.png)
 
 Welcome to Dineroes, a simple and efficient web app for managing your personal finances. The app is built using Vite, React, TypeScript, and Tailwind CSS for a modern and responsive user experience. It also integrates with Firebase for backend services and Google Sign-In for seamless authentication.
 
