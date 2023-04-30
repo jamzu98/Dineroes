@@ -46,6 +46,17 @@ export const BudgetProvider: React.FC<BudgetProviderProps> = ({ children }) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showMessage, setShowMessage] = useState<boolean>(false);
 
+  const validateCategoryName = (categoryName: string): boolean => {
+    if (categoryName.trim() === '') {
+      setErrorMessage('Category must be named');
+      setShowMessage(true);
+      return false;
+    }
+    setErrorMessage(null);
+    setShowMessage(false);
+    return true;
+  };
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -97,6 +108,9 @@ export const BudgetProvider: React.FC<BudgetProviderProps> = ({ children }) => {
 
   const addCategory = async (category: Category) => {
     if (!auth.currentUser) return;
+    if (!validateCategoryName(category.name)) {
+      return;
+    }
 
     const budgetRef = doc(firestore, 'budgets', auth.currentUser.uid);
 
