@@ -77,7 +77,7 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="container mx-auto p-4">
       <h1 className="text-2xl font-semibold mb-4">User Profile</h1>
       <form
         className="w-full max-w-sm mx-auto mt-4 mb-10"
