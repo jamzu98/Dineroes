@@ -12,6 +12,9 @@ const Budgeting: React.FC = () => {
 
   const [monthlyBudgetInput, setMonthlyBudgetInput] = useState<number>(0);
 
+  const [showCategoriesContainer, setShowCategoriesContainer] =
+    useState<boolean>(true);
+
   useEffect(() => {
     if (budget?.monthlyBudget) {
       setMonthlyBudgetInput(budget.monthlyBudget);
@@ -32,6 +35,10 @@ const Budgeting: React.FC = () => {
 
   const updateMonthlyBudget = () => {
     setMonthlyBudget(monthlyBudgetInput);
+  };
+
+  const toggleCategoriesContainer = () => {
+    setShowCategoriesContainer(!showCategoriesContainer);
   };
 
   const handleCategoryChange = (
@@ -94,59 +101,67 @@ const Budgeting: React.FC = () => {
           </button>
         </div>
       </div>
-      <div>
-        <h2 className="text-xl font-bold mb-2">Categories</h2>
-        {budget?.categories.map((category) => (
-          <div
-            key={category.name}
-            className="flex justify-between items-center mb-2"
-          >
-            <div className="flex-1 mr-2">
-              <p>{category.name}</p>
-              <p>{category.amount}</p>
-            </div>
-            <button
-              className="bg-red-500 text-white px-2 py-1"
-              onClick={() => deleteCategory(category.name)}
+      <button
+        className="border-solid border-2 border-black px-2 py-1 hover:bg-gray-200 transition-all duration-100"
+        onClick={toggleCategoriesContainer}
+      >
+        {showCategoriesContainer ? 'Hide Categories' : 'Show Categories'}
+      </button>
+      {showCategoriesContainer && (
+        <div id="categoriesContainer">
+          <h2 className="text-xl font-bold mb-2">Categories</h2>
+          {budget?.categories.map((category) => (
+            <div
+              key={category.name}
+              className="flex justify-between items-center mb-2"
             >
-              Delete
+              <div className="flex-1 mr-2">
+                <p>{category.name}</p>
+                <p>{category.amount}</p>
+              </div>
+              <button
+                className="bg-red-500 text-white px-2 py-1"
+                onClick={() => deleteCategory(category.name)}
+              >
+                Delete
+              </button>
+            </div>
+          ))}
+          <div className="sm:flex mb-4">
+            <input
+              type="text"
+              id="categoryName"
+              className="border border-gray-300 px-2 py-1 mr-2 flex-1"
+              placeholder="Category name"
+              value={newCategory.name}
+              onChange={(e) => handleCategoryChange(e, 'name')}
+              onKeyUp={(e) => {
+                if (e.key === 'Enter') {
+                  handleAddCategory();
+                }
+              }}
+            />
+            <input
+              type="number"
+              className="border border-gray-300 px-2 py-1 mr-2 w-full sm:w-32"
+              placeholder="Amount"
+              value={newCategory.amount}
+              onChange={(e) => handleCategoryChange(e, 'amount')}
+              onKeyUp={(e) => {
+                if (e.key === 'Enter') {
+                  handleAddCategory();
+                }
+              }}
+            />
+            <button
+              className="bg-green-500 text-white px-2 py-1 w-full sm:w-auto"
+              onClick={handleAddCategory}
+            >
+              Add
             </button>
           </div>
-        ))}
-        <div className="sm:flex mb-4">
-          <input
-            type="text"
-            id="categoryName"
-            className="border border-gray-300 px-2 py-1 mr-2 flex-1"
-            placeholder="Category name"
-            value={newCategory.name}
-            onChange={(e) => handleCategoryChange(e, 'name')}
-            onKeyUp={(e) => {
-              if (e.key === 'Enter') {
-                handleAddCategory();
-              }
-            }}
-          />
-          <input
-            type="number"
-            className="border border-gray-300 px-2 py-1 mr-2 w-full sm:w-32"
-            placeholder="Amount"
-            value={newCategory.amount}
-            onChange={(e) => handleCategoryChange(e, 'amount')}
-            onKeyUp={(e) => {
-              if (e.key === 'Enter') {
-                handleAddCategory();
-              }
-            }}
-          />
-          <button
-            className="bg-green-500 text-white px-2 py-1 w-full sm:w-auto"
-            onClick={handleAddCategory}
-          >
-            Add
-          </button>
         </div>
-      </div>
+      )}
       {budget && budget.categories.length > 0 && (
         <div className="flex flex-col sm:flex-row">
           <div className="sm:w-1/2 mb-4 sm:mb-0">
