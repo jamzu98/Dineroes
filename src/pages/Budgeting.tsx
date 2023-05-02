@@ -17,15 +17,15 @@ const Budgeting: React.FC = () => {
   const handleMonthlyBudgetChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    if (event.target.value === '' || +event.target.value < 0) {
+    const value = +event.target.value;
+    if (isNaN(value) || value < 0) {
       setMonthlyBudgetInput(0);
-      return;
+    } else {
+      setMonthlyBudgetInput(value);
     }
-    setMonthlyBudgetInput(parseFloat(event.target.value));
   };
 
   const updateMonthlyBudget = () => {
-    console.log(monthlyBudgetInput);
     setMonthlyBudget(monthlyBudgetInput);
   };
 
@@ -35,10 +35,7 @@ const Budgeting: React.FC = () => {
   ) => {
     setNewCategory({
       ...newCategory,
-      [field]:
-        field === 'amount'
-          ? parseFloat(event.target.value)
-          : event.target.value,
+      [field]: field === 'amount' ? +event.target.value : event.target.value,
     });
   };
 
@@ -78,6 +75,11 @@ const Budgeting: React.FC = () => {
             value={monthlyBudgetInput}
             onChange={handleMonthlyBudgetChange}
             disabled={!budget}
+            onKeyUp={(e) => {
+              if (e.key === 'Enter') {
+                updateMonthlyBudget();
+              }
+            }}
           />
           <button
             className="bg-green-500 text-white px-2 py-1"
