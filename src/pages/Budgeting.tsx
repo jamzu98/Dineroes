@@ -1,5 +1,3 @@
-// src/pages/Budgeting.tsx
-
 import React, { useContext, useState } from 'react';
 import BudgetContext from '../contexts/BudgetContext';
 import { PieChart, Pie, Tooltip, Legend, Cell } from 'recharts';
@@ -12,10 +10,23 @@ const Budgeting: React.FC = () => {
 
   const [newCategory, setNewCategory] = useState({ name: '', amount: 0 });
 
+  const [monthlyBudgetInput, setMonthlyBudgetInput] = useState(
+    budget?.monthlyBudget || 0
+  );
+
   const handleMonthlyBudgetChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setMonthlyBudget(parseFloat(event.target.value));
+    if (event.target.value === '' || +event.target.value < 0) {
+      setMonthlyBudgetInput(0);
+      return;
+    }
+    setMonthlyBudgetInput(parseFloat(event.target.value));
+  };
+
+  const updateMonthlyBudget = () => {
+    console.log(monthlyBudgetInput);
+    setMonthlyBudget(monthlyBudgetInput);
   };
 
   const handleCategoryChange = (
@@ -59,14 +70,22 @@ const Budgeting: React.FC = () => {
         >
           Monthly Budget
         </label>
-        <input
-          type="number"
-          id="monthlyBudget"
-          className="border border-gray-300 px-2 py-1 w-full"
-          value={budget?.monthlyBudget}
-          onChange={handleMonthlyBudgetChange}
-          disabled={!budget}
-        />
+        <div className="flex">
+          <input
+            type="number"
+            id="monthlyBudget"
+            className="border border-gray-300 px-2 py-1 mr-2 w-full"
+            value={monthlyBudgetInput}
+            onChange={handleMonthlyBudgetChange}
+            disabled={!budget}
+          />
+          <button
+            className="bg-green-500 text-white px-2 py-1"
+            onClick={updateMonthlyBudget}
+          >
+            Update
+          </button>
+        </div>
       </div>
       <div>
         <h2 className="text-xl font-bold mb-2">Categories</h2>
@@ -87,7 +106,7 @@ const Budgeting: React.FC = () => {
             </button>
           </div>
         ))}
-        <div className="flex mb-4">
+        <div className="sm:flex mb-4">
           <input
             type="text"
             id="categoryName"
@@ -103,7 +122,7 @@ const Budgeting: React.FC = () => {
           />
           <input
             type="number"
-            className="border border-gray-300 px-2 py-1 mr-2 w-32"
+            className="border border-gray-300 px-2 py-1 mr-2 w-full sm:w-32"
             placeholder="Amount"
             value={newCategory.amount}
             onChange={(e) => handleCategoryChange(e, 'amount')}
@@ -114,7 +133,7 @@ const Budgeting: React.FC = () => {
             }}
           />
           <button
-            className="bg-green-500 text-white px-2 py-1"
+            className="bg-green-500 text-white px-2 py-1 w-full sm:w-auto"
             onClick={handleAddCategory}
           >
             Add
@@ -122,8 +141,8 @@ const Budgeting: React.FC = () => {
         </div>
       </div>
       {budget && budget.categories.length > 0 && (
-        <div className="flex">
-          <div>
+        <div className="flex flex-col sm:flex-row">
+          <div className="sm:w-1/2 mb-4 sm:mb-0">
             <h2 className="text-xl font-bold mb-2">Category Distribution</h2>
             {(() => {
               const data = budget.categories.map((category) => ({
@@ -155,7 +174,7 @@ const Budgeting: React.FC = () => {
               );
             })()}
           </div>
-          <div className="ml-12 flex-1">
+          <div className="sm:w-1/2">
             <h2 className="text-xl font-bold mb-2">Category Details</h2>
             <table className="table-auto border-collapse border border-gray-300 w-full bg-white">
               <thead>
@@ -193,5 +212,4 @@ const Budgeting: React.FC = () => {
     </div>
   );
 };
-
 export default Budgeting;
