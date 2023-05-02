@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import BudgetContext from '../contexts/BudgetContext';
 import { PieChart, Pie, Tooltip, Legend, Cell } from 'recharts';
 
@@ -10,14 +10,19 @@ const Budgeting: React.FC = () => {
 
   const [newCategory, setNewCategory] = useState({ name: '', amount: 0 });
 
-  const [monthlyBudgetInput, setMonthlyBudgetInput] = useState(
-    budget?.monthlyBudget || 0
-  );
+  const [monthlyBudgetInput, setMonthlyBudgetInput] = useState<number>(0);
+
+  useEffect(() => {
+    if (budget?.monthlyBudget) {
+      setMonthlyBudgetInput(budget.monthlyBudget);
+    }
+  }, [budget]);
 
   const handleMonthlyBudgetChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const value = +event.target.value;
+
     if (isNaN(value) || value < 0) {
       setMonthlyBudgetInput(0);
     } else {
@@ -198,15 +203,28 @@ const Budgeting: React.FC = () => {
                 ))}
               </tbody>
             </table>
-            <div className="bg-white p-4 border-2">
-              <h3 className="text-lg font-bold mt-4">Unallocated Budget</h3>
-              <p
-                className={
-                  calculateRemainingBudget() < 0
-                    ? 'text-red-600'
-                    : 'text-green-600'
-                }
-              >{`${calculateRemainingBudget()}`}</p>
+
+            <div className="bg-white p-4 border-2 grid grid-flow-col">
+              <div>
+                <h3 className="text-lg font-bold mt-4">Monthly Budget</h3>
+                <p
+                  className={
+                    calculateRemainingBudget() < 0
+                      ? 'text-red-600'
+                      : 'text-green-600'
+                  }
+                >{`${budget.monthlyBudget}`}</p>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold mt-4">Budget Balance</h3>
+                <p
+                  className={
+                    calculateRemainingBudget() < 0
+                      ? 'text-red-600'
+                      : 'text-green-600'
+                  }
+                >{`${calculateRemainingBudget()}`}</p>
+              </div>
             </div>
           </div>
         </div>

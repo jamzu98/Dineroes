@@ -111,6 +111,11 @@ export const BudgetProvider: React.FC<BudgetProviderProps> = ({ children }) => {
   };
 
   const addCategory = async (category: Category) => {
+    if ((budget?.categories.length ?? 0) >= 20) {
+      setErrorMessage('You cannot have more than 20 categories');
+      setShowMessage(true);
+      return;
+    }
     if (!auth.currentUser) return;
     if (!validateCategoryName(category.name)) {
       return;
