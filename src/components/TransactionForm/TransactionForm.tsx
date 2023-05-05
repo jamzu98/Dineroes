@@ -24,6 +24,11 @@ const TransactionForm: React.FC = () => {
     addTransaction(transaction);
     setDescription('');
     setAmount('');
+    (
+      document.querySelector<HTMLInputElement>(
+        '#description'
+      ) as HTMLInputElement
+    )?.focus();
   };
 
   return (
