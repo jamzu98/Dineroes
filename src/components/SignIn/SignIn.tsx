@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { auth, provider } from '../../firebase';
 import {
   createUserWithEmailAndPassword,
@@ -6,6 +6,7 @@ import {
   signInWithPopup,
 } from 'firebase/auth';
 import logo from '../../assets/Dineroes_logo256.png';
+import { AuthContext } from '../../contexts/AuthContext';
 
 const SignIn: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -16,6 +17,11 @@ const SignIn: React.FC = () => {
   const [signUpPassword, setSignUpPassword] = useState('');
   const [showSignUp, setShowSignUp] = useState(false);
   const [showConfirmationMessage, setShowConfirmationMessage] = useState(false);
+
+  const authContext = useContext(AuthContext);
+  if (!authContext) throw new Error('authcontext not found.');
+
+  const { isDemoUser, setIsDemoUser } = authContext;
 
   const toggleSignUp = () => {
     setShowSignUp(!showSignUp);
@@ -73,6 +79,32 @@ const SignIn: React.FC = () => {
     } finally {
       setLoading(false);
     }
+    await setIsDemoUser(false);
+    console.log(isDemoUser);
+  };
+
+  const demoSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      await signInWithEmailAndPassword(
+        auth,
+        import.meta.env.VITE_DEMO_EMAIL,
+        import.meta.env.VITE_DEMO_PASSWORD
+      );
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('An unknown error occurred.');
+      }
+    } finally {
+      setLoading(false);
+    }
+    await setIsDemoUser(true);
+    console.log(isDemoUser);
   };
 
   return (
@@ -144,6 +176,13 @@ const SignIn: React.FC = () => {
             className="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-lg focus:outline-none hover:bg-blue-600 mt-4"
           >
             Switch to Sign Up
+          </button>
+          <button
+            type="button"
+            onClick={demoSignIn}
+            className="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-lg focus:outline-none hover:bg-blue-600 mt-4"
+          >
+            Try without account
           </button>
         </form>
       ) : (

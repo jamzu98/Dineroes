@@ -7,6 +7,7 @@ import {
 } from 'firebase/auth';
 import BudgetContext from '../contexts/BudgetContext';
 import TransactionsContext from '../contexts/TransactionsContext';
+import { AuthContext } from '../contexts/AuthContext';
 
 const Profile: React.FC = () => {
   const [displayName, setDisplayName] = useState('');
@@ -16,13 +17,21 @@ const Profile: React.FC = () => {
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [message, setMessage] = useState('');
 
+  const authContext = useContext(AuthContext);
+  if (!authContext) throw new Error('authcontext not found.');
+
+  const { isDemoUser } = authContext;
+
   const { clearBudgetData } = useContext(BudgetContext);
   const { clearTransactionsData } = useContext(TransactionsContext);
 
   useEffect(() => {
-    if (auth.currentUser) {
+    if (auth.currentUser && !isDemoUser) {
       setDisplayName(auth.currentUser.displayName || '');
       setEmail(auth.currentUser.email || '');
+    } else {
+      setDisplayName('DEMO');
+      setEmail('DEMO');
     }
   }, []);
 
@@ -35,6 +44,9 @@ const Profile: React.FC = () => {
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage('');
+
+    if (isDemoUser)
+      return setMessage(`This function isn't available in demo mode.`);
 
     if (newPassword !== confirmNewPassword) {
       setMessage('New password and confirmation do not match.');
@@ -60,7 +72,11 @@ const Profile: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (auth.currentUser) {
+
+    if (isDemoUser)
+      return setMessage(`This function isn't available in demo mode.`);
+
+    if (auth.currentUser && !isDemoUser) {
       try {
         await updateProfile(auth.currentUser, {
           displayName: displayName,

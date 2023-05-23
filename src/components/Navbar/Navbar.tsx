@@ -1,12 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { auth } from '../../firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { signOut } from 'firebase/auth';
+import { AuthContext } from '../../contexts/AuthContext';
 
 const Navbar: React.FC = () => {
   const [user] = useAuthState(auth);
   const [dropdownVisible, setDropdownVisible] = useState(false);
+
+  const authContext = useContext(AuthContext);
+  if (!authContext) throw new Error('authcontext not found.');
+
+  const { isDemoUser } = authContext;
 
   const menuContainerRef = useRef<HTMLDivElement>(null);
 
@@ -51,7 +57,11 @@ const Navbar: React.FC = () => {
               className="text-white focus:outline-none hover:text-gray-100 font-bold"
               onClick={() => setDropdownVisible(!dropdownVisible)}
             >
-              {user.displayName ? user.displayName : user.email}
+              {!isDemoUser
+                ? user.displayName
+                  ? user.displayName
+                  : user.email
+                : 'DEMO'}
             </button>
             {dropdownVisible && (
               <div

@@ -1,4 +1,10 @@
-import React, { createContext, useState, ReactNode, useEffect } from 'react';
+import React, {
+  createContext,
+  useState,
+  ReactNode,
+  useEffect,
+  useContext,
+} from 'react';
 import { Transaction } from '../types';
 import { auth, firestore } from '../firebase';
 import { User, onAuthStateChanged } from 'firebase/auth';
@@ -12,6 +18,7 @@ import {
   query,
   writeBatch,
 } from 'firebase/firestore';
+import { AuthContext } from './AuthContext';
 
 interface TransactionsContextState {
   transactions: Transaction[];
@@ -40,8 +47,29 @@ const TransactionsContext = createContext<TransactionsContextState>({
 export const TransactionsProvider: React.FC<TransactionsProviderProps> = ({
   children,
 }) => {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [user, setUser] = useState<User | null>(null);
+  const authContext = useContext(AuthContext);
+  if (!authContext) throw new Error('authcontext not found.');
+
+  const { isDemoUser } = authContext;
+  const [transactions, setTransactions] = useState<Transaction[]>(() => {
+    if (isDemoUser) {
+      const storedTransactions =
+        window.localStorage.getItem('demoTransactions');
+      return storedTransactions ? JSON.parse(storedTransactions) : [];
+    } else {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    if (isDemoUser) {
+      window.localStorage.setItem(
+        'demoTransactions',
+        JSON.stringify(transactions)
+      );
+    }
+  }, [isDemoUser, transactions]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -73,6 +101,15 @@ export const TransactionsProvider: React.FC<TransactionsProviderProps> = ({
   const addTransaction = async (transaction: Omit<Transaction, 'id'>) => {
     if (!user) return;
 
+    if (isDemoUser) {
+      const newTransaction = {
+        ...transaction,
+        id: `${Date.now()}`,
+      };
+      setTransactions([...transactions, newTransaction]);
+      return;
+    }
+
     const newTransaction = {
       ...transaction,
       id: doc(collection(firestore, 'transactions')).id,
@@ -84,13 +121,19 @@ export const TransactionsProvider: React.FC<TransactionsProviderProps> = ({
         doc(firestore, 'transactions', newTransaction.id),
         newTransaction
       );
-      // Do not update the state here, let the onSnapshot listener handle it
     } catch (error) {
       console.error('Error adding transaction: ', error);
     }
   };
 
   const deleteTransaction = async (id: string) => {
+    if (!user) return;
+    if (isDemoUser) {
+      setTransactions(
+        transactions.filter((transaction) => transaction.id !== id)
+      );
+      return;
+    }
     try {
       await deleteDoc(doc(firestore, 'transactions', id));
       setTransactions((prevTransactions) =>
@@ -103,6 +146,10 @@ export const TransactionsProvider: React.FC<TransactionsProviderProps> = ({
 
   const clearTransactionsData = async () => {
     if (!user) return;
+    if (isDemoUser) {
+      setTransactions([]);
+      return;
+    }
 
     const batch = writeBatch(firestore);
     transactions.forEach((transaction) => {
